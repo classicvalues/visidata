@@ -3,7 +3,7 @@ import itertools
 from copy import copy, deepcopy
 import textwrap
 
-from visidata import VisiData, Extensible, globalCommand, ColumnAttr, ColumnItem, vd, ENTER, EscapeException, drawcache, drawcache_property, LazyChainMap, asyncthread, ExpectedException
+from visidata import VisiData, Extensible, globalCommand, ColumnAttr, ColumnItem, vd, ENTER, EscapeException, drawcache, drawcache_property, LazyChainMap, asyncthread, ExpectedException, setitem
 from visidata import (options, Column, namedlist, SettableColumn,
 TypedExceptionWrapper, BaseSheet, UNLOADED,
 vd, clipdraw, ColorAttr, update_attr, colors, undoAttrFunc)
@@ -520,7 +520,8 @@ class TableSheet(BaseSheet):
         if ccol and not ccol.keycol:
             index = self.columns.index(ccol)+1
 
-        firstnewcol = self.addColumn(*cols, index=index)
+        self.addColumn(*cols, index=index)
+        firstnewcol = [c for c in cols if not c.hidden][0]
         self.cursorVisibleColIndex = self.visibleCols.index(firstnewcol)
         return firstnewcol
 
@@ -958,7 +959,7 @@ class IndexSheet(Sheet):
     precious = False
 
     columns = [
-        ColumnAttr('name'),
+        Column('name', getter=lambda c,r: r.names[-1], setter=lambda c,r,v: setitem(r.names, -1, v)),
         ColumnAttr('rows', 'nRows', type=int, width=9),
         ColumnAttr('cols', 'nCols', type=int),
         ColumnAttr('keys', 'keyColNames'),
