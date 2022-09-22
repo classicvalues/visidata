@@ -1,4 +1,4 @@
-.Dd July 19, 2022
+.Dd September 13, 2022
 .Dt vd \&1 "Quick Reference Guide"
 .Os Linux/MacOS
 .
@@ -187,13 +187,13 @@ toggle/unset current column as a key column
 .It Ic "~  #  %  $  @  z#"
 set type of current column to str/int/float/currency/date/len
 .It Ic "  ^"
-edit name of current column
+rename current column
 .It Ic " g^"
-set names of all unnamed visible columns to contents of selected rows (or current row)
+rename all unnamed visible columns to contents of selected rows (or current row)
 .It Ic " z^"
-set name of current column to combined contents of current cell in selected rows (or current row)
+rename current column to combined contents of current cell in selected rows (or current row)
 .It Ic "gz^"
-set name of all visible columns to combined contents of current column for selected rows (or current row)
+rename all visible columns to combined contents of current column for selected rows (or current row)
 .Pp
 .It Ic "  =" Ar expr
 .No create new column from Python Ar expr Ns , with column names, and attributes, as variables
@@ -376,14 +376,16 @@ autocomplete input (when available)
 .It Ic " o" Ar input
 open
 .Ar input No in Sy VisiData
+.It Ic "zo"
+open file or url from path in current cell
 .It Ic "^S g^S" Ar filename
 .No save current/all sheet(s) to Ar filename No in format determined by extension (default .tsv)
 .It ""
 .No Note: if the format does not support multisave, or the Ar filename No ends in a Sy / Ns , a directory will be created.
 .It Ic "z^S" Ar filename
 .No save current column only to Ar filename No in format determined by extension (default .tsv)
-.It Ic "^D" Ar filename.vd
-.No save Sy CommandLog No to Ar filename.vd No file
+.It Ic "^D" Ar filename.vdj
+.No save Sy CommandLog No to Ar filename.vdj No file
 .It Ic "A"
 .No open new blank sheet with one column
 .It Ic "T"
@@ -553,14 +555,6 @@ open current row/cell/sheet as Python object
 .El
 .
 .Ss INTERNAL SHEETS
-.Ss VisiDataMenu (Shift+V)
-.Bl -inset -compact
-.It (sheet-specific commands)
-.El
-.Bl -tag -width XXXXXXXXXXXXXXX -compact -offset XXX
-.It Ic Enter
-.No load sheet in current row
-.El
 .Ss Directory Sheet
 .Bl -inset -compact
 .It (global commands)
@@ -757,6 +751,26 @@ replay contents of entire CommandLog
 abort replay
 .El
 .
+.Ss Threads Sheet (Ctrl+T)
+.Bl -inset -compact
+.It (global commands)
+.El
+.Bl -tag -width XXXXXXXXXXXXXXX -compact -offset XXX
+.It Ic  ^T
+.No open global Sy Threads Sheet No for all asynchronous threads running
+.It Ic z^T
+.No open current sheet's Sy Threads Sheet No
+.El
+.Bl -inset -compact
+.It (sheet-specific commands)
+.El
+.Bl -tag -width XXXXXXXXXXXXXXX -compact -offset XXX
+.It Ic " ^C"
+abort thread at current row
+.It Ic "g^C"
+.No abort all threads on current Sy Threads Sheet No
+.El
+.
 .Ss DERIVED SHEETS
 .Ss Frequency Table (Shift+F)
 .Bl -inset -compact
@@ -851,6 +865,10 @@ show/hide methods and hidden properties
 set loader to use for
 .Ar filetype
 instead of file extension
+.
+.Lo d delimiter delimiter
+.No "\(rst                "
+field delimiter to use for tsv/usv filetype
 .
 .Lo y confirm-overwrite F
 .No "True              "

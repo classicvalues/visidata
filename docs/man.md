@@ -96,10 +96,10 @@ vd(1)                                                                           
      <span style="font-weight:bold;">!</span> <span style="font-weight:bold;">z!</span>             toggle/unset current column as a key column
      <span style="font-weight:bold;">~</span>  <span style="font-weight:bold;">#</span>  <span style="font-weight:bold;">%</span>  <span style="font-weight:bold;">$</span>  <span style="font-weight:bold;">@</span>  <span style="font-weight:bold;">z#</span>
                       set type of current column to str/int/float/currency/date/len
-       <span style="font-weight:bold;">^</span>              edit name of current column
-      <span style="font-weight:bold;">g^</span>              set names of all unnamed visible columns to contents of selected rows (or current row)
-      <span style="font-weight:bold;">z^</span>              set name of current column to combined contents of current cell in selected rows (or current row)
-     <span style="font-weight:bold;">gz^</span>              set name of all visible columns to combined contents of current column for selected rows (or current row)
+       <span style="font-weight:bold;">^</span>              rename current column
+      <span style="font-weight:bold;">g^</span>              rename all unnamed visible columns to contents of selected rows (or current row)
+      <span style="font-weight:bold;">z^</span>              rename current column to combined contents of current cell in selected rows (or current row)
+     <span style="font-weight:bold;">gz^</span>              rename all visible columns to combined contents of current column for selected rows (or current row)
 
        <span style="font-weight:bold;">=</span> <span style="text-decoration:underline;">expr</span>         create new column from Python <span style="text-decoration:underline;">expr</span>, with column names, and attributes, as variables
       <span style="font-weight:bold;">g=</span> <span style="text-decoration:underline;">expr</span>         set current column for selected rows to result of Python <span style="text-decoration:underline;">expr</span>
@@ -187,10 +187,11 @@ vd(1)                                                                           
 
    <span style="font-weight:bold;">Data</span> <span style="font-weight:bold;">Toolkit</span>
       <span style="font-weight:bold;">o</span> <span style="text-decoration:underline;">input</span>         open <span style="text-decoration:underline;">input</span> in <span style="font-weight:bold;">VisiData</span>
+     <span style="font-weight:bold;">zo</span>               open file or url from path in current cell
      <span style="font-weight:bold;">^S</span> <span style="font-weight:bold;">g^S</span> <span style="text-decoration:underline;">filename</span>  save current/all sheet(s) to <span style="text-decoration:underline;">filename</span> in format determined by extension (default .tsv)
                       Note: if the format does not support multisave, or the <span style="text-decoration:underline;">filename</span> ends in a <span style="font-weight:bold;">/</span>, a directory will be created.
      <span style="font-weight:bold;">z^S</span> <span style="text-decoration:underline;">filename</span>     save current column only to <span style="text-decoration:underline;">filename</span> in format determined by extension (default .tsv)
-     <span style="font-weight:bold;">^D</span> <span style="text-decoration:underline;">filename.vd</span>   save <span style="font-weight:bold;">CommandLog</span> to <span style="text-decoration:underline;">filename.vd</span> file
+     <span style="font-weight:bold;">^D</span> <span style="text-decoration:underline;">filename.vdj</span>  save <span style="font-weight:bold;">CommandLog</span> to <span style="text-decoration:underline;">filename.vdj</span> file
      <span style="font-weight:bold;">A</span>                open new blank sheet with one column
      <span style="font-weight:bold;">T</span>                open new sheet that has rows and columns of current sheet transposed
 
@@ -281,10 +282,6 @@ vd(1)                                                                           
       <span style="font-weight:bold;">.</span>  <span style="font-weight:bold;">Transposed</span> <span style="font-weight:bold;">Sheet</span> (Shift+T)   open new sheet with rows and columns transposed
 
    <span style="font-weight:bold;">INTERNAL</span> <span style="font-weight:bold;">SHEETS</span>
-   <span style="font-weight:bold;">VisiDataMenu</span> <span style="font-weight:bold;">(Shift+V)</span>
-     (sheet-specific commands)
-        <span style="font-weight:bold;">Enter</span>            load sheet in current row
-
    <span style="font-weight:bold;">Directory</span> <span style="font-weight:bold;">Sheet</span>
      (global commands)
         <span style="font-weight:bold;">Space</span> <span style="text-decoration:underline;">open-dir-current</span>
@@ -372,6 +369,14 @@ vd(1)                                                                           
          <span style="font-weight:bold;">gx</span>              replay contents of entire CommandLog
          <span style="font-weight:bold;">^C</span>              abort replay
 
+   <span style="font-weight:bold;">Threads</span> <span style="font-weight:bold;">Sheet</span> <span style="font-weight:bold;">(Ctrl+T)</span>
+     (global commands)
+        <span style="font-weight:bold;">^T</span>               open global <span style="font-weight:bold;">Threads</span> <span style="font-weight:bold;">Sheet</span> for all asynchronous threads running
+        <span style="font-weight:bold;">z^T</span>              open current sheet's <span style="font-weight:bold;">Threads</span> <span style="font-weight:bold;">Sheet</span>
+     (sheet-specific commands)
+         <span style="font-weight:bold;">^C</span>              abort thread at current row
+        <span style="font-weight:bold;">g^C</span>              abort all threads on current <span style="font-weight:bold;">Threads</span> <span style="font-weight:bold;">Sheet</span>
+
    <span style="font-weight:bold;">DERIVED</span> <span style="font-weight:bold;">SHEETS</span>
    <span style="font-weight:bold;">Frequency</span> <span style="font-weight:bold;">Table</span> <span style="font-weight:bold;">(Shift+F)</span>
      A <span style="font-weight:bold;">Frequency</span> <span style="font-weight:bold;">Table</span> groups rows by one or more columns, and includes summary columns for those with aggregators.
@@ -418,6 +423,7 @@ vd(1)                                                                           
      <span style="font-weight:bold;">+</span><span style="text-decoration:underline;">toplevel</span>:<span style="text-decoration:underline;">subsheet</span>:<span style="text-decoration:underline;">col</span>:<span style="text-decoration:underline;">row</span>   launch vd with <span style="text-decoration:underline;">subsheet</span> of <span style="text-decoration:underline;">toplevel</span> at top-of-stack, and cursor at <span style="text-decoration:underline;">col</span> and <span style="text-decoration:underline;">row</span>; all arguments are optional
 
      <span style="font-weight:bold;">-f</span>, <span style="font-weight:bold;">--filetype</span>=<span style="text-decoration:underline;">filetype</span>      tsv                set loader to use for <span style="text-decoration:underline;">filetype</span> instead of file extension
+     <span style="font-weight:bold;">-d</span>, <span style="font-weight:bold;">--delimiter</span>=<span style="text-decoration:underline;">delimiter</span>    \t                 field delimiter to use for tsv/usv filetype
      <span style="font-weight:bold;">-y</span>, <span style="font-weight:bold;">--confirm-overwrite</span>=<span style="text-decoration:underline;">F</span>    True               overwrite existing files without confirmation
      <span style="font-weight:bold;">--visidata-dir</span>=<span style="text-decoration:underline;">str</span>           ~/.visidata/       directory to load and store additional files
      <span style="font-weight:bold;">--mouse-interval</span>=<span style="text-decoration:underline;">int</span>         1                  max time between press/release for click (ms)
@@ -456,6 +462,8 @@ vd(1)                                                                           
      <span style="font-weight:bold;">--tsv-safe-tab</span>=<span style="text-decoration:underline;">str</span>                              replacement for tab character when saving to tsv
      <span style="font-weight:bold;">--visibility</span>=<span style="text-decoration:underline;">int</span>             0                  visibility level (0=low, 1=high)
      <span style="font-weight:bold;">--default-sample-size</span>=<span style="text-decoration:underline;">int</span>    100                number of rows to sample for regex.split (0=all)
+     <span style="font-weight:bold;">--fmt-expand-dict</span>=<span style="text-decoration:underline;">str</span>        %s.%s              format str to use for names of columns expanded from dict (colname, key)
+     <span style="font-weight:bold;">--fmt-expand-list</span>=<span style="text-decoration:underline;">str</span>        %s[%s]             format str to use for names of columns expanded from list (colname, index)
      <span style="font-weight:bold;">--json-indent</span>=<span style="text-decoration:underline;">NoneType</span>       None               indent to use when saving json
      <span style="font-weight:bold;">--json-sort-keys</span>             False              sort object keys when saving to json
      <span style="font-weight:bold;">--default-colname</span>=<span style="text-decoration:underline;">str</span>                           column name to use for non-dict rows
@@ -503,6 +511,7 @@ vd(1)                                                                           
      <span style="font-weight:bold;">--fixed-maxcols</span>=<span style="text-decoration:underline;">int</span>          0                  max number of fixed-width columns to create (0 is no max)
      <span style="font-weight:bold;">--postgres-schema</span>=<span style="text-decoration:underline;">str</span>        public             The desired schema for the Postgres database
      <span style="font-weight:bold;">--http-max-next</span>=<span style="text-decoration:underline;">int</span>          0                  max next.url pages to follow in http response
+     <span style="font-weight:bold;">--http-req-headers</span>=<span style="text-decoration:underline;">dict</span>      {}                 http headers to send to requests
      <span style="font-weight:bold;">--html-title</span>=<span style="text-decoration:underline;">str</span>             &lt;h2&gt;{sheet.name}&lt;/h2&gt;
                                                      table header when saving to html
      <span style="font-weight:bold;">--pcap-internet</span>=<span style="text-decoration:underline;">str</span>          n                  (y/s/n) if save_dot includes all internet hosts separately (y), combined (s), or does not include the internet (n)
@@ -511,6 +520,7 @@ vd(1)                                                                           
      <span style="font-weight:bold;">--pdf-tables</span>                 False              parse PDF for tables instead of pages of text
      <span style="font-weight:bold;">--plugins-url</span>=<span style="text-decoration:underline;">str</span>            https://visidata.org/plugins/plugins.jsonl
                                                      source of plugins sheet
+     <span style="font-weight:bold;">--plugins-autoload</span>=<span style="text-decoration:underline;">bool</span>      True               do not autoload plugins if False
 
    <span style="font-weight:bold;">DISPLAY</span> <span style="font-weight:bold;">OPTIONS</span>
      Display options can only be set via the <span style="text-decoration:underline;">Options</span> <span style="text-decoration:underline;">Sheet</span> or a <span style="text-decoration:underline;">.visidatarc</span> (see <span style="text-decoration:underline;">FILES</span>).
@@ -698,5 +708,5 @@ vd(1)                                                                           
 <span style="font-weight:bold;">AUTHOR</span>
      <span style="font-weight:bold;">VisiData</span> was made by Saul Pwanson &lt;<span style="text-decoration:underline;">vd@saul.pw</span>&gt;.
 
-Linux/MacOS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      July 19, 2022                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Linux/MacOS
+Linux/MacOS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    September 13, 2022                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   Linux/MacOS
 </pre></section>

@@ -13,7 +13,7 @@ vd.option('replay_movement', False, 'insert movements during replay', sheettype=
 nonLogged = '''forget exec-longname undo redo quit
 show error errors statuses options threads jump
 replay cancel save-cmdlog macro cmdlog-sheet menu repeat
-go- search scroll prev next page start end zoom resize visibility
+go- search scroll prev next page start end zoom resize visibility sidebar
 mouse suspend redraw no-op help syscopy sysopen profile toggle'''.split()
 
 vd.option('rowkey_prefix', 'キ', 'string prefix for rowkey in the cmdlog', sheettype=None)
@@ -35,7 +35,7 @@ VisiData.save_vd = VisiData.save_tsv
 @VisiData.api
 def save_vdj(vd, p, *vsheets):
     with p.open_text(mode='w', encoding=vsheets[0].options.encoding) as fp:
-        fp.write("#!vd -p\n")
+        fp.write("#!/usr/bin/env vd -p\n")
         for vs in vsheets:
             vs.write_jsonl(fp)
 
@@ -178,7 +178,7 @@ class _CommandLog:
             self.afterExecSheet(sheet, False, '')
 
         colname, rowname, sheetname = '', '', None
-        if sheet and not (cmd.longname.startswith('open-') and not cmd.longname in ('open-row', 'open-cell')):
+        if sheet and not (cmd.longname.startswith('open-') and not cmd.longname in ('open-row-pyobj', 'open-cell-pyobj')):
             sheetname = sheet.name
 
             colname, rowname = sheet.commandCursor(cmd.execstr)
@@ -450,7 +450,8 @@ def shortcut(self):
 @VisiData.property
 def cmdlog(vd):
     if not vd._cmdlog:
-        vd._cmdlog = CommandLogJsonl('cmdlog', rows=[])
+        vd._cmdlog = CommandLogJsonl('cmdlog', rows=[])  # no reload
+        vd._cmdlog.reloadCols()
         vd.beforeExecHooks.append(vd._cmdlog.beforeExecHook)
     return vd._cmdlog
 
@@ -463,14 +464,14 @@ def modifyCommand(vd):
     return vd.cmdlog.rows[-1]
 
 
-@CommandLog.api
+@CommandLogJsonl.api
 @asyncthread
 def repeat_for_n(cmdlog, r, n=1):
     r.sheet = r.row = r.col = ""
     for i in range(n):
         vd.replayOne(r)
 
-@CommandLog.api
+@CommandLogJsonl.api
 @asyncthread
 def repeat_for_selected(cmdlog, r):
     r.sheet = r.row = r.col = ""

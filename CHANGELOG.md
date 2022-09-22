@@ -1,5 +1,108 @@
 # VisiData version history
 
+# v2.10.1 (2022-09-14)
+
+## Improvements
+
+- [docs] document `-d` option (thanks @abitrolly for PR #1515)
+- [freq] disable histogram if `disp_histlen` or `disp_histogram` set to 0 or empty string
+- [guard] add `guard-sheet-off` which unsets `options.quitguard` on current sheet (thanks @hanfried for PR #1517)
+- [menu] add `BUTTON1_CLICKED` (same as `BUTTON1_PRESSED`)
+- [open] add `zo` to open file or url from path in current cell
+
+## Bugfixes
+
+- fix Guix build problems (reported by @ryanprior #1499)
+- add support for sheet names with multiple `.` (periods) in the name (requested by @geekscrapy #1494)
+- [cmdlog] add more portable shebang in vdj
+- [date] fix custom date greater than or equal to comparison
+- [macros] fix `macro-record` (#1513)
+- [macros] refresh `macro-sheet` upon macro addition
+- [macros] ensure macros are set upon startup
+- [plugins] update usd plugin api (thanks @hanfried for PR #1510)
+- [repeat] fix `repeat-` (#1513)
+- [status] reduce priority of active colouring (reported by @geekscrapy #804)
+
+## API
+
+- add `ExpandedColumn` to globals
+- add `Extensible.before` and `Extensible.after`
+  - `def foo` decorated with `@VisiData.before` will run it before `vd.foo()`
+  - `def foo` decorated with `@VisiData.after` will run it immediately after
+
+
+
+# v2.10 (2022-08-28)
+
+- [plugins] load all entry points in `visidata.plugins` group before config load
+  - add entry_points={'visidata.plugins': 'foo=foo'} to plugin load plugin automatically when launching VisiData
+
+- [deps] require `importlib_metadata` >= 3.6
+  - following https://github.com/pypa/twine/pull/732
+
+## Improvements
+
+- [draw] redraw only every 100 ms if any keys pending (requested by @ansoncg #1459)
+- [IndexSheet] shown name is only final name component
+- [loaders html] add table of all links on page (requested by @dufferzafar #1424)
+- [loaders html] `open-row` on **LinksSheet** to open url (requested by @dufferzafar #1424)
+- [options] add `options.http_req_*` to send headers/etc to requests (requested by @daviewales #1446)
+- [options pyobj] add `options.fmt_expand_dict` and `options.fmt_expand_list` for formatting expanded
+    list and dict column names (requested by @joe-opensrc #1457)
+- [threads-sheet] add `z Ctrl+T` (`threads-sheet`) to open **ThreadsSheet** for current sheet
+- [threads-sheet] add `g Ctrl+C` (`cancel-all`) to **ThreadsSheet**
+- [zsh] add scripts for zsh completion (PR by @Freed-Wu #1455)
+  - tutorial: https://visidata.org/docs/shell/
+
+## Bugfixes
+
+- [addcol-] set cursor at added column for `addcol-new`/`addcol-bulk` (reported by @jsvine #1445)
+- [cmdlog] `Ctrl+S` from a **CommandLog** now defaults to `.vdj` (reported by @jsvine #1443)
+- [display] format entire string for undetermined width (reported by and fixed by @jsvine #1442)
+- [formatter] fix len format strings
+- [LastInputsSheet] catch other exceptions during reload
+- [loader npz] fix .npz loader (reported by @Shahin-rmz #1440)
+- [loader geojson] fix plotting and saving geojson files (fixed by @mwayne #1477)
+- [loader geojson] improve feature property manipulation (fixed by @mwayne #1477)
+- [menu] upon menu item keypress, move to item (reported by @reagle #1470)
+- [menu] fix `ALT+<keystroke>` navigation while within menu (reported by @reagle #1470)
+  - now requires two `ESC` to exit
+- [open] allow binary files from archives (reported by @frosencrantz #1430)
+- [save] do not save unknown filetype as `save_filetype`
+- [save visidatarc] only save rows on **OptionsSheet** to visidatarc
+- [sheets] fix name reconstruction for files with multiple  and no suffixes (#1450)
+- [sheets] do not include empty name parts in sheet name
+- [unzip-http] **FreqTableSheet** `open-row` now loads links (reported by @frosencrantz #1458)
+- [zip] use correct rowdef in extract (reported by @frosencrantz #1430)
+- [zip] do not create directory for extract
+
+## snippets
+
+- add snippets/scrolloff.py which mimics vim's scrollof context lines (requested by @gennaro-tedesco #1441)
+
+## vdplus
+
+- `open-memusage` was moved to vdplus
+
+## API
+
+- add InferColumnsSheet
+  - it infers the columns and their types from the rows it gets which are dicts
+  - used by json, npy loader
+- add vd.printout and vd.printerr for builtins.print to stdout and stderr
+- add `vd.view()`
+- fix Extensible.init() to work with classes with no `__init__`
+- add `Sheet.sidebar` and `Sheet.sidebar_title` properties
+
+## Deprecated
+
+- remove VisiDataSheet
+- remove vdmenu
+
+# v2.9.1 (2022-07-21)
+
+- [unzip-http] move urllib3 to optional dependencies
+
 # 2.9 (2022-07-20)
 
 - [ux] add confirming modal dialog

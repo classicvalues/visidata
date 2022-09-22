@@ -2,7 +2,7 @@
 # Usage: $0 [<options>] [<input> ...]
 #        $0 [<options>] --play <cmdlog> [--batch] [-w <waitsecs>] [-o <output>] [field=value ...]
 
-__version__ = '2.10dev'
+__version__ = '2.11dev'
 __version_info__ = 'saul.pw/VisiData v' + __version__
 
 from copy import copy
@@ -104,9 +104,8 @@ def main_vd():
         vd.warning(e)
 
     warnings.showwarning = vd.warning
-    builtins.print = functools.wraps(builtins.print)(lambda *args, **kwargs: vd.status(*args) if not kwargs else builtins.print.__wrapped__(*args, **kwargs))
-    vd.printout = print.__wrapped__
-    vd.printerr = lambda *args, **kwargs: print(*args, file=sys.stderr)  # ignore kwargs (like priority)
+    vd.printout = builtins.print
+    vd.printerr = lambda *args, **kwargs: builtins.print(*args, file=sys.stderr)  # ignore kwargs (like priority)
 
     flPipedInput = not sys.stdin.isatty()
     flPipedOutput = not sys.stdout.isatty()
@@ -248,7 +247,8 @@ def main_vd():
         vd.cmdlog.openHook(vs, vs.source)
         sources.append(vs)
 
-    vd.sheets.extend(sources)  # purposefully do not load everything
+    for vs in reversed(sources):
+        vd.push(vs)
 
     if not vd.sheets and not args.play and not args.batch:
         if 'filetype' in current_args:
@@ -306,7 +306,11 @@ def main_vd():
             if startcol:
                 for vs in sheets:
                     if vs:
-                        vs.moveToCol(startcol) or vd.warning(f'{vs} has no column "{startcol}"')
+                        if not vs.moveToCol(startcol):
+                            if startcol.isdigit():
+                                vs.moveToCol(int(startcol)) # handle indexing by column number
+                            else:
+                                vd.warning(f'{vs} has no column "{startcol}"')
 
         if not args.batch:
             run(vd.sheets[0])
